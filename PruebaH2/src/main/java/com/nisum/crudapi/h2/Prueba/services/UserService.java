@@ -23,6 +23,9 @@ public class UserService {
     @Value("${email.validation.regex}")
     private String emailRegex;
 
+    @Value("${password.validation.regex}")
+    private String passwordRegex;
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -37,6 +40,7 @@ public class UserService {
 
     public UserResponse createUser(UserRequest userRequest) {
         validateEmail(userRequest.getEmail());
+        validatePassword(userRequest.getPassword());
 
         User user = new User();
         user.setName(userRequest.getName());
@@ -45,7 +49,7 @@ public class UserService {
        /** user.setPhones(userRequest.getPhones().stream().map(phoneRequest -> convertToEntityPhone(phoneRequest, user)).collect(Collectors.toList()));**/
        Optional<User> optionalUser = userRepository.findByEmail(userRequest.getEmail());
        if (optionalUser.isPresent()){
-           throw new RuntimeException("Usuario ya registrado con el email: " + userRequest.getEmail()); // Manejar excepción adecuadamente
+           throw new IllegalArgumentException("Usuario ya registrado con el email: " + userRequest.getEmail()); // Manejar excepción adecuadamente
        }else{
            userRepository.save(user);
        }
@@ -105,6 +109,13 @@ public class UserService {
         Pattern pattern = Pattern.compile(emailRegex);
         if (!pattern.matcher(email).matches()) {
             throw new IllegalArgumentException("El correo electrónico no tiene un formato válido.");
+        }
+    }
+
+    private void validatePassword(String password) {
+        Pattern pattern = Pattern.compile(passwordRegex);
+        if (!pattern.matcher(password).matches()) {
+            throw new IllegalArgumentException("La contraseña no cumple con el formato requerido.");
         }
     }
 }
