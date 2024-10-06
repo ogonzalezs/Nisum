@@ -74,20 +74,13 @@ public class UserService {
         Optional<User> optionalUser = userRepository.findByEmail(request.getEmail());
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            return convertToUserResponse(user);
+            return convertToResponse(user);
         } else {
             throw new RuntimeException("Usuario no encontrado con el email: " + request.getEmail()); // Manejar excepción adecuadamente
         }
     }
 
-    private UserResponse convertToUserResponse(User user) {
-        UserResponse response = new UserResponse();
-        response.setId(user.getId());
-        response.setLastLogin(user.getUpdatedAt());
-        response.setActive(user.isActive());
 
-        return response;
-    }
     private UserResponse convertToResponse(User user) {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
@@ -105,6 +98,7 @@ public class UserService {
         return phone;
     }
 
+    // Region : Validadores Mail y Password
     private void validateEmail(String email) {
         Pattern pattern = Pattern.compile(emailRegex);
         if (!pattern.matcher(email).matches()) {
