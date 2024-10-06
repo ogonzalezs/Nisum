@@ -4,6 +4,7 @@ import com.nisum.crudapi.h2.Prueba.dto.UserRequest;
 import com.nisum.crudapi.h2.Prueba.dto.UserResponse;
 import com.nisum.crudapi.h2.Prueba.services.UserService;
 import com.nisum.crudapi.h2.Prueba.entities.User;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,4 +50,5 @@ public class UserController {
         return userService.getUserByEmail(request);
 
     }
+    
 }

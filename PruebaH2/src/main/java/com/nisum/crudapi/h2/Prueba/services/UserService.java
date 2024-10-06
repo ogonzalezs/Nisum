@@ -7,6 +7,7 @@ import com.nisum.crudapi.h2.Prueba.entities.User;
 import com.nisum.crudapi.h2.Prueba.repositories.PhoneRepository;
 import com.nisum.crudapi.h2.Prueba.repositories.UserRepository;
 
+import com.nisum.crudapi.h2.Prueba.security.JWTUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -44,12 +45,15 @@ public class UserService {
 
     public UserResponse createUser(UserRequest userRequest) {
         validateEmail(userRequest.getEmail());
-        validatePassword(userRequest.getPassword());
+       //** validatePassword(userRequest.getPassword());**/
 
         User user = new User();
         user.setName(userRequest.getName());
         user.setEmail(userRequest.getEmail());
         user.setPassword(userRequest.getPassword());
+
+
+
 
         if (user.getPhones() == null) {
             user.setPhones(new ArrayList<>());
@@ -103,6 +107,11 @@ public class UserService {
         response.setPassword(user.getPassword());
         response.setLastLogin(user.getUpdatedAt());
         response.setActive(user.isActive());
+
+        JWTUtil jwtUtil = new  JWTUtil();
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        response.setToken(token);
         return response;
     }
 

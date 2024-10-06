@@ -9,6 +9,7 @@ public class UserResponse {
     private String name;
     private String email;
     private String password;
+    private String token;
 
     public String getName() {
         return name;
@@ -59,5 +60,13 @@ public class UserResponse {
 
     public void setActive(boolean active) {
         isActive = active;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }
