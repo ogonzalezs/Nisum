@@ -4,12 +4,14 @@ import com.nisum.crudapi.h2.Prueba.dto.UserRequest;
 import com.nisum.crudapi.h2.Prueba.dto.UserResponse;
 import com.nisum.crudapi.h2.Prueba.entities.Phone;
 import com.nisum.crudapi.h2.Prueba.entities.User;
+import com.nisum.crudapi.h2.Prueba.repositories.PhoneRepository;
 import com.nisum.crudapi.h2.Prueba.repositories.UserRepository;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PhoneRepository phoneRepository;
 
     @Value("${email.validation.regex}")
     private String emailRegex;
@@ -26,8 +29,9 @@ public class UserService {
     @Value("${password.validation.regex}")
     private String passwordRegex;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PhoneRepository phoneRepository) {
         this.userRepository = userRepository;
+        this.phoneRepository = phoneRepository;
     }
 
     public List<UserResponse> getAllUsers() {
@@ -46,12 +50,22 @@ public class UserService {
         user.setName(userRequest.getName());
         user.setEmail(userRequest.getEmail());
         user.setPassword(userRequest.getPassword());
-       /** user.setPhones(userRequest.getPhones().stream().map(phoneRequest -> convertToEntityPhone(phoneRequest, user)).collect(Collectors.toList()));**/
+
+        if (user.getPhones() == null) {
+            user.setPhones(new ArrayList<>());
+        }
+
+        userRequest.getPhones().forEach(phoneRequest -> {
+            Phone phone = convertToEntityPhone(phoneRequest, user);
+            user.getPhones().add(phone); // Agregar a la colección existente
+        });
        Optional<User> optionalUser = userRepository.findByEmail(userRequest.getEmail());
+
        if (optionalUser.isPresent()){
            throw new IllegalArgumentException("Usuario ya registrado con el email: " + userRequest.getEmail()); // Manejar excepción adecuadamente
        }else{
-           userRepository.save(user);
+          userRepository.save(user);
+
        }
         return convertToResponse(user);
     }
@@ -84,6 +98,9 @@ public class UserService {
     private UserResponse convertToResponse(User user) {
         UserResponse response = new UserResponse();
         response.setId(user.getId());
+        response.setName(user.getName());
+        response.setEmail(user.getEmail());
+        response.setPassword(user.getPassword());
         response.setLastLogin(user.getUpdatedAt());
         response.setActive(user.isActive());
         return response;
@@ -95,6 +112,7 @@ public class UserService {
         phone.setCitycode(phoneRequest.getCitycode());
         phone.setCountrycode(phoneRequest.getContrycode());
 
+        phone.setUser(user);
         return phone;
     }
 
@@ -109,7 +127,7 @@ public class UserService {
     private void validatePassword(String password) {
         Pattern pattern = Pattern.compile(passwordRegex);
         if (!pattern.matcher(password).matches()) {
-            throw new IllegalArgumentException("La contraseña no cumple con el formato requerido.");
+            throw new IllegalArgumentException("La contraseña no cumple con el formato requerido. Debe tener al menos: Una letra mayuscula, una letra minuscula, un numero, un caracter especial y mas de 8 digitos de longitud.");
         }
     }
 }

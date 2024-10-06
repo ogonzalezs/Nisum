@@ -35,8 +35,8 @@ public class User {
         updatedAt = LocalDateTime.now();
     }
 
-    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Phone> phonesList = new ArrayList<>() ;
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Phone> phones = new ArrayList<>() ;
 
     public UUID getId() {
         return id;
@@ -70,9 +70,7 @@ public class User {
         this.password = password;
     }
 
-    public List<Phone> getPhonesList() {
-        return phonesList;
-    }
+
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
@@ -98,9 +96,11 @@ public class User {
         isActive = active;
     }
 
-    public void setPhonesList(List<Phone> phonesList) {
-        this.phonesList = phonesList;
+    public void setPhones(List<Phone> phones) {
+        this.phones = phones;
     }
-
+    public List<Phone> getPhones() {
+        return phones;
+    }
 
 }
