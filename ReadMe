@@ -1,0 +1,32 @@
+Esta API permite realizar operaciones CRUD para usuarios, con la posibilidad de agregar múltiples teléfonos, almacenados en una tabla separada.
+
+## Requisitos
+
+- JDK 17
+- Maven
+
+## Cómo probar
+
+1. Clona el repositorio.
+2. Ejecuta el comando `mvn spring-boot:run`.
+3. Accede a la consola de H2 en `http://localhost:8080/h2-ui/'
+4. El metodo principal del ejercicio se puede ver en: http://localhost:8080/api/users/email
+    Entrada:
+    {
+    "name": "Juan Rodriguez",
+    "email": "orlando@mail.com",
+    "password": "hunter2",
+    "phones":   [
+                    {
+                    "number": "1234567",
+                    "citycode": "1",
+                    "contrycode": "57"
+                    }
+                ]
+    }
+    Respuesta:
+    {
+        "id": "5f658089-a3e3-46e4-aa89-33e96b8fe824",
+        "lastLogin": "2024-10-06T02:03:37.198688",
+        "active": true
+    }
